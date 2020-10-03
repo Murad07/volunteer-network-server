@@ -25,6 +25,10 @@ client.connect((err) => {
     .db('volunteerNetwork')
     .collection('volunteers');
 
+  const registersCollection = client
+    .db('volunteerNetwork')
+    .collection('registers');
+
   //Add all data from fakedata api
   app.post('/addVolunteer', (req, res) => {
     const volunteers = req.body;
@@ -38,6 +42,15 @@ client.connect((err) => {
   app.get('/volunteers', (req, res) => {
     volunteersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
+    });
+  });
+
+  //Add all register
+  app.post('/addRegister', (req, res) => {
+    const registers = req.body;
+
+    registersCollection.insertOne(registers).then((result) => {
+      res.send(result.insertedCount > 0);
     });
   });
 });
