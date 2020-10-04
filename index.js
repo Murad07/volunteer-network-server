@@ -14,7 +14,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.listen(5000);
+const port = 5000;
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -30,12 +30,14 @@ client.connect((err) => {
     .db('volunteerNetwork')
     .collection('registers');
 
-  //Add all data from fakedata api
+  //Add data from fakedata api
+  // ***** When you need to add many data *****
+  // ***** just use insertMany at the place of insertOne *****
   app.post('/addVolunteer', (req, res) => {
     const volunteers = req.body;
 
-    volunteersCollection.insertMany(volunteers).then((result) => {
-      res.send(result.insertedCount);
+    volunteersCollection.insertOne(volunteers).then((result) => {
+      res.send(result.insertedCount > 0);
     });
   });
 
@@ -65,12 +67,13 @@ client.connect((err) => {
   });
 
   //Read data from server - all registers
-  app.get('/userRegisterList', (req, res) => {
+  app.get('/allVolunteersList', (req, res) => {
     registersCollection.find({}).toArray((err, documents) => {
       res.send(documents);
     });
   });
 
+  // get single user Volunteer list by email
   app.get('/userRegisterList/:email', (req, res) => {
     registersCollection
       .find({ email: req.params.email })
@@ -88,3 +91,5 @@ client.connect((err) => {
       });
   });
 });
+
+app.listen(process.env.PORT || port);
