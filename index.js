@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 // const nodemailer = require('nodemailer');
+const ObjectId = require('mongodb').ObjectId;
 
 const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config();
@@ -45,6 +46,15 @@ client.connect((err) => {
     });
   });
 
+  // get volunteer by id
+  app.get('/volunteers/:id', (req, res) => {
+    const id = req.params.id;
+    const o_id = new ObjectId(id);
+    volunteersCollection.find({ _id: o_id }).toArray((err, documents) => {
+      res.send(documents[0]);
+    });
+  });
+
   //Add all register
   app.post('/addRegister', (req, res) => {
     const registers = req.body;
@@ -52,5 +62,29 @@ client.connect((err) => {
     registersCollection.insertOne(registers).then((result) => {
       res.send(result.insertedCount > 0);
     });
+  });
+
+  //Read data from server - all registers
+  app.get('/userRegisterList', (req, res) => {
+    registersCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+  app.get('/userRegisterList/:email', (req, res) => {
+    registersCollection
+      .find({ email: req.params.email })
+      .toArray((err, documents) => {
+        res.send(documents);
+      });
+  });
+
+  // delete a register by id
+  app.delete('/delete/:id', (req, res) => {
+    registersCollection
+      .deleteOne({ _id: ObjectId(req.params.id) })
+      .then((result) => {
+        res.send(result.deletedCount > 0);
+      });
   });
 });
