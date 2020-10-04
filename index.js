@@ -92,4 +92,9 @@ client.connect((err) => {
   });
 });
 
+// check
+app.get('/', (req, res) => {
+  res.send("hello from db it's working");
+});
+
 app.listen(process.env.PORT || port);
