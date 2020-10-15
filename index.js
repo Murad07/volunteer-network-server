@@ -94,7 +94,7 @@ client.connect((err) => {
 
 // check
 app.get('/', (req, res) => {
-  res.send("hello from db it's working");
+  res.send("hello from db it's working 1");
 });
 
 app.listen(process.env.PORT || port);
